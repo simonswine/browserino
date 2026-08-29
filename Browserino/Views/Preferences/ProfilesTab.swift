@@ -8,31 +8,36 @@ import SwiftUI
 struct ProfilesTab: View {
     @AppStorage("chromeProfiles") private var chromeProfiles: [ChromeProfile] = []
     @AppStorage("chromeProfilesEnabled") private var chromeProfilesEnabled: Bool = true
+    @AppStorage("shortcuts") private var shortcuts: [String: String] = [:]
 
     @State private var hasDetected = false
+    @State private var detectionError: String?
 
     private var chromeInstalled: Bool {
         ChromeProfileUtil.chromeURL() != nil
     }
 
     private func detectProfiles() {
-        let detected = ChromeProfileUtil.detectProfiles()
-
-        var merged: [ChromeProfile] = []
-        for profile in detected {
-            if let existing = chromeProfiles.first(where: { $0.directoryName == profile.directoryName }) {
-                merged.append(ChromeProfile(
-                    directoryName: existing.directoryName,
-                    displayName: existing.displayName,
-                    isHidden: existing.isHidden
-                ))
-            } else {
-                merged.append(profile)
+        do {
+            let merged = try ChromeProfileUtil.refreshProfiles(current: chromeProfiles) {
+                try ChromeProfileUtil.detectProfiles()
             }
+
+            ChromeProfileUtil.migrateLegacyShortcut(&shortcuts, to: merged)
+            chromeProfiles = merged
+            detectionError = nil
+        } catch {
+            detectionError = "Could not read Chrome profiles. Your saved profile settings were not changed."
+        }
+        hasDetected = true
+    }
+
+    private func migrateLegacyShortcutIfNeeded() {
+        guard chromeProfilesEnabled else {
+            return
         }
 
-        chromeProfiles = merged
-        hasDetected = true
+        ChromeProfileUtil.migrateLegacyShortcut(&shortcuts, to: chromeProfiles)
     }
 
     private func displayName(at index: Int) -> Binding<String> {
@@ -65,6 +70,13 @@ struct ProfilesTab: View {
                 }
                 .padding(.horizontal, 20)
                 .padding(.top, 12)
+
+                if let detectionError {
+                    Text(detectionError)
+                        .font(.subheadline)
+                        .foregroundStyle(.red)
+                        .padding(.horizontal, 20)
+                }
 
                 List {
                     ForEach(Array(chromeProfiles.enumerated()), id: \.element.directoryName) { index, profile in
@@ -113,6 +125,13 @@ struct ProfilesTab: View {
         .onAppear {
             if !hasDetected && chromeInstalled && chromeProfiles.isEmpty {
                 detectProfiles()
+            } else {
+                migrateLegacyShortcutIfNeeded()
+            }
+        }
+        .onChange(of: chromeProfilesEnabled) { enabled in
+            if enabled {
+                migrateLegacyShortcutIfNeeded()
             }
         }
     }

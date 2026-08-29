@@ -8,14 +8,6 @@
 import AppKit
 import SwiftUI
 
-struct PickerBrowserItem: Identifiable {
-    let id: String
-    let appURL: URL
-    let displayName: String?
-    let profileDirectory: String?
-    let shortcutKey: String?
-}
-
 struct PromptView: View {
     @AppStorage("browsers") private var browsers: [URL] = []
     @AppStorage("hiddenBrowsers") private var hiddenBrowsers: [URL] = []
@@ -50,40 +42,26 @@ struct PromptView: View {
     }
 
     var pickerBrowserItems: [PickerBrowserItem] {
-        var items: [PickerBrowserItem] = []
-
-        for browser in visibleBrowsers {
-            guard let bundle = Bundle(url: browser) else { continue }
-            let bundleID = bundle.bundleIdentifier ?? ""
-
-            if chromeProfilesEnabled && bundleID == ChromeProfileUtil.chromeBundleID {
-                let visibleProfiles = chromeProfiles.filter { !$0.isHidden }
-                if !visibleProfiles.isEmpty {
-                    for profile in visibleProfiles {
-                        let profileID = "\(bundleID)::\(profile.directoryName)"
-                        let chromeName = bundle.infoDictionary?["CFBundleName"] as? String ?? "Google Chrome"
-                        items.append(PickerBrowserItem(
-                            id: profileID,
-                            appURL: browser,
-                            displayName: "\(chromeName) - \(profile.displayName)",
-                            profileDirectory: profile.directoryName,
-                            shortcutKey: shortcuts[profileID]
-                        ))
-                    }
-                    continue
-                }
+        let pickerBrowsers = visibleBrowsers.compactMap { browser in
+            guard let bundle = Bundle(url: browser),
+                  let bundleIdentifier = bundle.bundleIdentifier
+            else {
+                return nil
             }
 
-            items.append(PickerBrowserItem(
-                id: bundleID,
+            return PickerBrowser(
                 appURL: browser,
-                displayName: nil,
-                profileDirectory: nil,
-                shortcutKey: shortcuts[bundleID]
-            ))
+                bundleIdentifier: bundleIdentifier,
+                displayName: bundle.infoDictionary?["CFBundleName"] as? String ?? bundleIdentifier
+            )
         }
 
-        return items
+        return PickerBrowserItemBuilder.makeItems(
+            browsers: pickerBrowsers,
+            chromeProfilesEnabled: chromeProfilesEnabled,
+            chromeProfiles: chromeProfiles,
+            shortcuts: shortcuts
+        )
     }
 
     var totalItemCount: Int {

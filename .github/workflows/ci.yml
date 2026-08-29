@@ -31,6 +31,17 @@ jobs:
       - name: Validate property lists
         run: plutil -lint Browserino/Info.plist Browserino/Browserino.entitlements
 
+      - name: Run tests
+        if: matrix.arch == 'arm64'
+        run: >-
+          xcodebuild test
+          -project Browserino.xcodeproj
+          -scheme Browserino
+          -configuration Debug
+          -destination 'platform=macOS'
+          CODE_SIGNING_ALLOWED=NO
+          CODE_SIGNING_REQUIRED=NO
+
       - name: Build unsigned release app
         run: >-
           xcodebuild build

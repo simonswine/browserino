@@ -11,6 +11,8 @@ struct BrowsersTab: View {
     @AppStorage("browsers") private var browsers: [URL] = []
     @AppStorage("hiddenBrowsers") private var hiddenBrowsers: [URL] = []
     @AppStorage("privateArgs") private var privateArgs: [String: String] = [:]
+    @AppStorage("chromeProfiles") private var chromeProfiles: [ChromeProfile] = []
+    @AppStorage("chromeProfilesEnabled") private var chromeProfilesEnabled: Bool = true
 
     private func move(from source: IndexSet, to destination: Int) {
         browsers.move(fromOffsets: source, toOffset: destination)
@@ -60,9 +62,11 @@ struct BrowsersTab: View {
                             Spacer()
                                 .frame(width: 32)
 
-                            ShortcutButton(
-                                browserId: bundle.bundleIdentifier!
-                            )
+                            if bundle.bundleIdentifier != ChromeProfileUtil.chromeBundleID || !chromeProfilesEnabled || chromeProfiles.isEmpty {
+                                ShortcutButton(
+                                    browserId: bundle.bundleIdentifier!
+                                )
+                            }
 
                             Spacer()
                                 .frame(width: 8)

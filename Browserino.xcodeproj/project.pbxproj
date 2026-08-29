@@ -6,7 +6,10 @@
 	objectVersion = 56;
 	objects = {
 
-/* Begin PBXBuildFile section */
+	/* Begin PBXBuildFile section */
+		AA00010F2F0C700100FC6D37 /* PickerBrowserItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00010E2F0C700100FC6D37 /* PickerBrowserItem.swift */; };
+		AA0001112F0C700100FC6D37 /* ChromeProfileTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0001102F0C700100FC6D37 /* ChromeProfileTests.swift */; };
+		AA0001132F0C700100FC6D37 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA0001122F0C700100FC6D37 /* XCTest.framework */; };
 		AA00010B2F0C700100FC6D37 /* ChromeProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00010A2F0C700100FC6D37 /* ChromeProfile.swift */; };
 		AA00010D2F0C700100FC6D37 /* ProfilesTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00010C2F0C700100FC6D37 /* ProfilesTab.swift */; };
 		664FDF222CE4AA6B009766AA /* BrowserUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664FDF212CE4AA6B009766AA /* BrowserUtil.swift */; };
@@ -39,9 +42,23 @@
 		989B17FD2C17400A0039441B /* EditAppForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 989B17FC2C17400A0039441B /* EditAppForm.swift */; };
 		98F919362C12187500BDC10C /* Browserino.icns in Resources */ = {isa = PBXBuildFile; fileRef = 98F919352C12187500BDC10C /* Browserino.icns */; };
 		B9CFBE192F0C6F3D00FC6D37 /* URLExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9CFBE182F0C6F3D00FC6D37 /* URLExtensions.swift */; };
-/* End PBXBuildFile section */
+	/* End PBXBuildFile section */
 
-/* Begin PBXFileReference section */
+	/* Begin PBXContainerItemProxy section */
+		AA0001192F0C700100FC6D37 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9830F09A2C119A3000D69C88 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9830F0A12C119A3000D69C88;
+			remoteInfo = Browserino;
+		};
+	/* End PBXContainerItemProxy section */
+
+	/* Begin PBXFileReference section */
+		AA00010E2F0C700100FC6D37 /* PickerBrowserItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerBrowserItem.swift; sourceTree = "<group>"; };
+		AA0001102F0C700100FC6D37 /* ChromeProfileTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChromeProfileTests.swift; sourceTree = "<group>"; };
+		AA0001122F0C700100FC6D37 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = System/Library/Frameworks/XCTest.framework; sourceTree = SDKROOT; };
+		AA0001142F0C700100FC6D37 /* BrowserinoTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BrowserinoTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		AA00010A2F0C700100FC6D37 /* ChromeProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChromeProfile.swift; sourceTree = "<group>"; };
 		AA00010C2F0C700100FC6D37 /* ProfilesTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilesTab.swift; sourceTree = "<group>"; };
 		664FDF212CE4AA6B009766AA /* BrowserUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserUtil.swift; sourceTree = "<group>"; };
@@ -79,7 +96,15 @@
 		B9CFBE182F0C6F3D00FC6D37 /* URLExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLExtensions.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
-/* Begin PBXFrameworksBuildPhase section */
+	/* Begin PBXFrameworksBuildPhase section */
+		AA0001162F0C700100FC6D37 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AA0001132F0C700100FC6D37 /* XCTest.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		9830F09F2C119A3000D69C88 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -89,11 +114,12 @@
 		};
 /* End PBXFrameworksBuildPhase section */
 
-/* Begin PBXGroup section */
+	/* Begin PBXGroup section */
 		9830F0992C119A3000D69C88 = {
 			isa = PBXGroup;
 			children = (
 				9830F0A42C119A3000D69C88 /* Browserino */,
+				AA0001152F0C700100FC6D37 /* BrowserinoTests */,
 				9830F0A32C119A3000D69C88 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -102,8 +128,17 @@
 			isa = PBXGroup;
 			children = (
 				9830F0A22C119A3000D69C88 /* Browserino.app */,
+				AA0001142F0C700100FC6D37 /* BrowserinoTests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		AA0001152F0C700100FC6D37 /* BrowserinoTests */ = {
+			isa = PBXGroup;
+			children = (
+				AA0001102F0C700100FC6D37 /* ChromeProfileTests.swift */,
+			);
+			path = BrowserinoTests;
 			sourceTree = "<group>";
 		};
 		9830F0A42C119A3000D69C88 /* Browserino */ = {
@@ -170,6 +205,7 @@
 			isa = PBXGroup;
 			children = (
 				AA00010A2F0C700100FC6D37 /* ChromeProfile.swift */,
+				AA00010E2F0C700100FC6D37 /* PickerBrowserItem.swift */,
 				986DC8082CFE42EA00447DC7 /* Rule.swift */,
 				664FDF212CE4AA6B009766AA /* BrowserUtil.swift */,
 			);
@@ -205,7 +241,24 @@
 		};
 /* End PBXGroup section */
 
-/* Begin PBXNativeTarget section */
+	/* Begin PBXNativeTarget section */
+		AA0001182F0C700100FC6D37 /* BrowserinoTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AA00011D2F0C700100FC6D37 /* Build configuration list for PBXNativeTarget "BrowserinoTests" */;
+			buildPhases = (
+				AA0001172F0C700100FC6D37 /* Sources */,
+				AA0001162F0C700100FC6D37 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				AA00011A2F0C700100FC6D37 /* PBXTargetDependency */,
+			);
+			name = BrowserinoTests;
+			productName = BrowserinoTests;
+			productReference = AA0001142F0C700100FC6D37 /* BrowserinoTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		9830F0A12C119A3000D69C88 /* Browserino */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 9830F0B12C119A3100D69C88 /* Build configuration list for PBXNativeTarget "Browserino" */;
@@ -233,6 +286,10 @@
 				LastSwiftUpdateCheck = 1530;
 				LastUpgradeCheck = 1530;
 				TargetAttributes = {
+					AA0001182F0C700100FC6D37 = {
+						CreatedOnToolsVersion = 16.0;
+						TestTargetID = 9830F0A12C119A3000D69C88;
+					};
 					9830F0A12C119A3000D69C88 = {
 						CreatedOnToolsVersion = 15.3;
 					};
@@ -252,6 +309,7 @@
 			projectRoot = "";
 			targets = (
 				9830F0A12C119A3000D69C88 /* Browserino */,
+				AA0001182F0C700100FC6D37 /* BrowserinoTests */,
 			);
 		};
 /* End PBXProject section */
@@ -269,12 +327,21 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
-/* Begin PBXSourcesBuildPhase section */
+	/* Begin PBXSourcesBuildPhase section */
+		AA0001172F0C700100FC6D37 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AA0001112F0C700100FC6D37 /* ChromeProfileTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		9830F09E2C119A3000D69C88 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				AA00010B2F0C700100FC6D37 /* ChromeProfile.swift in Sources */,
+				AA00010F2F0C700100FC6D37 /* PickerBrowserItem.swift in Sources */,
 				AA00010D2F0C700100FC6D37 /* ProfilesTab.swift in Sources */,
 				9830F0BB2C11DE8F00D69C88 /* PreferencesView.swift in Sources */,
 				9830F0A82C119A3000D69C88 /* PromptView.swift in Sources */,
@@ -306,9 +373,45 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-/* End PBXSourcesBuildPhase section */
+	/* End PBXSourcesBuildPhase section */
 
-/* Begin XCBuildConfiguration section */
+	/* Begin PBXTargetDependency section */
+		AA00011A2F0C700100FC6D37 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9830F0A12C119A3000D69C88 /* Browserino */;
+			targetProxy = AA0001192F0C700100FC6D37 /* PBXContainerItemProxy */;
+		};
+	/* End PBXTargetDependency section */
+
+	/* Begin XCBuildConfiguration section */
+		AA00011B2F0C700100FC6D37 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGNING_ALLOWED = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				PRODUCT_BUNDLE_IDENTIFIER = xyz.alexstrnik.BrowserinoTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Browserino.app/Contents/MacOS/Browserino";
+			};
+			name = Debug;
+		};
+		AA00011C2F0C700100FC6D37 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGNING_ALLOWED = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				PRODUCT_BUNDLE_IDENTIFIER = xyz.alexstrnik.BrowserinoTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Browserino.app/Contents/MacOS/Browserino";
+			};
+			name = Release;
+		};
 		9830F0AF2C119A3100D69C88 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -503,7 +606,16 @@
 		};
 /* End XCBuildConfiguration section */
 
-/* Begin XCConfigurationList section */
+	/* Begin XCConfigurationList section */
+		AA00011D2F0C700100FC6D37 /* Build configuration list for PBXNativeTarget "BrowserinoTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AA00011B2F0C700100FC6D37 /* Debug */,
+				AA00011C2F0C700100FC6D37 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		9830F09D2C119A3000D69C88 /* Build configuration list for PBXProject "Browserino" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
