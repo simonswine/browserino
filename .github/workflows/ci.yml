@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build (${{ matrix.arch }})
+    runs-on: macos-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        arch:
+          - arm64
+          - x86_64
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - name: Validate property lists
+        run: plutil -lint Browserino/Info.plist Browserino/Browserino.entitlements
+
+      - name: Build unsigned release app
+        run: >-
+          xcodebuild build
+          -project Browserino.xcodeproj
+          -target Browserino
+          -configuration Release
+          -sdk macosx
+          -arch "${{ matrix.arch }}"
+          CONFIGURATION_BUILD_DIR="$RUNNER_TEMP/Build-${{ matrix.arch }}"
+          CODE_SIGNING_ALLOWED=NO
+          CODE_SIGNING_REQUIRED=NO
+
+      - name: Sign and verify app bundle
+        run: |
+          APP_PATH="$RUNNER_TEMP/Build-${{ matrix.arch }}/Browserino.app"
+          codesign --force --sign - "$APP_PATH"
+          codesign --verify --deep --strict "$APP_PATH"
+          lipo "$APP_PATH/Contents/MacOS/Browserino" -verify_arch "${{ matrix.arch }}"

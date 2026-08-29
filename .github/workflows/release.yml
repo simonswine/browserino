@@ -1,0 +1,111 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  package:
+    name: Package (${{ matrix.arch }})
+    runs-on: macos-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        arch:
+          - arm64
+          - x86_64
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - name: Validate release version
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          if [[ ! "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Release tags must use vMAJOR.MINOR.PATCH, such as v1.2.3."
+            exit 1
+          fi
+
+      - name: Build unsigned release app
+        env:
+          ARCH: ${{ matrix.arch }}
+          VERSION: ${{ github.ref_name }}
+        run: |
+          VERSION="${VERSION#v}"
+          xcodebuild build \
+            -project Browserino.xcodeproj \
+            -target Browserino \
+            -configuration Release \
+            -sdk macosx \
+            -arch "$ARCH" \
+            CONFIGURATION_BUILD_DIR="$RUNNER_TEMP/Build-$ARCH" \
+            MARKETING_VERSION="$VERSION" \
+            CURRENT_PROJECT_VERSION="$GITHUB_RUN_NUMBER" \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO
+          APP_PATH="$RUNNER_TEMP/Build-$ARCH/Browserino.app"
+          codesign --force --sign - "$APP_PATH"
+          codesign --verify --deep --strict "$APP_PATH"
+          lipo "$APP_PATH/Contents/MacOS/Browserino" -verify_arch "$ARCH"
+
+      - name: Create DMG
+        env:
+          ARCH: ${{ matrix.arch }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          APP_PATH="$RUNNER_TEMP/Build-$ARCH/Browserino.app"
+          DMG_NAME="Browserino-$TAG-macos-$ARCH.dmg"
+          mkdir dist
+          hdiutil create -volname Browserino -srcfolder "$APP_PATH" -ov -format UDZO "dist/$DMG_NAME"
+          hdiutil verify "dist/$DMG_NAME"
+          (
+            cd dist
+            shasum -a 256 "$DMG_NAME" > "$DMG_NAME.sha256"
+          )
+
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: Browserino-${{ matrix.arch }}
+          path: dist/
+          if-no-files-found: error
+
+  publish:
+    name: Publish GitHub Release
+    needs: package
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: Browserino-arm64
+          path: artifacts/arm64
+
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: Browserino-x86_64
+          path: artifacts/x86_64
+
+      - name: Create release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          gh release create "$TAG" \
+            "artifacts/arm64/Browserino-$TAG-macos-arm64.dmg" \
+            "artifacts/arm64/Browserino-$TAG-macos-arm64.dmg.sha256" \
+            "artifacts/x86_64/Browserino-$TAG-macos-x86_64.dmg" \
+            "artifacts/x86_64/Browserino-$TAG-macos-x86_64.dmg.sha256" \
+            --title "$TAG" \
+            --generate-notes
