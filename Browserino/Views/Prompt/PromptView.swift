@@ -13,6 +13,9 @@ struct PromptView: View {
     @AppStorage("hiddenBrowsers") private var hiddenBrowsers: [URL] = []
     @AppStorage("apps") private var apps: [App] = []
     @AppStorage("shortcuts") private var shortcuts: [String: String] = [:]
+    @AppStorage("chromeProfiles") private var chromeProfiles: [ChromeProfile] = []
+    @AppStorage("chromeProfilesEnabled") private var chromeProfilesEnabled: Bool = true
+    @AppStorage("browserOrder") private var browserOrder: [String] = []
 
     @AppStorage("copy_closeAfterCopy") private var closeAfterCopy: Bool = false
     @AppStorage("copy_alternativeShortcut") private var alternativeShortcut: Bool = false
@@ -36,7 +39,45 @@ struct PromptView: View {
     }
 
     var visibleBrowsers: [URL] {
-        browsers.filter { !hiddenBrowsers.contains($0) }
+        browsers.filter { browser in
+            guard hiddenBrowsers.contains(browser),
+                  let bundle = Bundle(url: browser)
+            else {
+                return true
+            }
+
+            return chromeProfilesEnabled
+                && bundle.bundleIdentifier == ChromeProfileUtil.chromeBundleID
+                && !chromeProfiles.isEmpty
+        }
+    }
+
+    var pickerBrowserItems: [PickerBrowserItem] {
+        let pickerBrowsers: [PickerBrowser] = visibleBrowsers.compactMap { browser -> PickerBrowser? in
+            guard let bundle = Bundle(url: browser),
+                  let bundleIdentifier = bundle.bundleIdentifier
+            else {
+                return nil
+            }
+
+            return PickerBrowser(
+                appURL: browser,
+                bundleIdentifier: bundleIdentifier,
+                displayName: bundle.infoDictionary?["CFBundleName"] as? String ?? bundleIdentifier
+            )
+        }
+
+        return PickerBrowserItemBuilder.makeItems(
+            browsers: pickerBrowsers,
+            chromeProfilesEnabled: chromeProfilesEnabled,
+            chromeProfiles: chromeProfiles,
+            shortcuts: shortcuts,
+            browserOrder: browserOrder
+        )
+    }
+
+    var totalItemCount: Int {
+        pickerBrowserItems.count + appsForUrls.count
     }
 
     func openUrlsInApp(app: App) {
@@ -60,6 +101,38 @@ struct PromptView: View {
             app: app.app,
             isIncognito: false
         )
+    }
+
+    func openBrowserItem(_ item: PickerBrowserItem, isIncognito: Bool) {
+        BrowserUtil.openURL(
+            urls,
+            app: item.appURL,
+            isIncognito: isIncognito,
+            profileDirectory: item.profileDirectory
+        )
+    }
+
+    func handleEnter(isIncognito: Bool) {
+        let browserItems = pickerBrowserItems
+        if appsAtTop {
+            if selected < appsForUrls.count {
+                openUrlsInApp(app: appsForUrls[selected])
+            } else {
+                let idx = selected - appsForUrls.count
+                if idx < browserItems.count {
+                    openBrowserItem(browserItems[idx], isIncognito: isIncognito)
+                }
+            }
+        } else {
+            if selected < browserItems.count {
+                openBrowserItem(browserItems[selected], isIncognito: isIncognito)
+            } else {
+                let idx = selected - browserItems.count
+                if idx < appsForUrls.count {
+                    openUrlsInApp(app: appsForUrls[idx])
+                }
+            }
+        }
     }
 
     var body: some View {
@@ -86,24 +159,21 @@ struct PromptView: View {
                                     )
                                 }
                             }
-                            
+
                             Divider()
                         }
-                        
-                        ForEach(Array(visibleBrowsers.enumerated()), id: \.offset) {
-                            index, browser in
-                            if let bundle = Bundle(url: browser) {
+
+                        ForEach(Array(pickerBrowserItems.enumerated()), id: \.element.id) {
+                            index, item in
+                            if let bundle = Bundle(url: item.appURL) {
                                 PromptItem(
-                                    browser: browser,
+                                    browser: item.appURL,
                                     urls: urls,
                                     bundle: bundle,
-                                    shortcut: shortcuts[bundle.bundleIdentifier!]
+                                    shortcut: item.shortcutKey,
+                                    displayName: item.displayName
                                 ) {
-                                    BrowserUtil.openURL(
-                                        urls,
-                                        app: browser,
-                                        isIncognito: NSEvent.modifierFlags.contains(.shift)
-                                    )
+                                    openBrowserItem(item, isIncognito: NSEvent.modifierFlags.contains(.shift))
                                 }
                                 .id(index + (appsAtTop ? appsForUrls.count : 0))
                                 .buttonStyle(
@@ -127,10 +197,10 @@ struct PromptView: View {
                                     ) {
                                         openUrlsInApp(app: app)
                                     }
-                                    .id(visibleBrowsers.count + index)
+                                    .id(pickerBrowserItems.count + index)
                                     .buttonStyle(
                                         SelectButtonStyle(
-                                            selected: selected == visibleBrowsers.count + index
+                                            selected: selected == pickerBrowserItems.count + index
                                         )
                                     )
                                 }
@@ -146,59 +216,19 @@ struct PromptView: View {
                         selected = max(0, selected - 1)
                         scrollViewProxy.scrollTo(selected, anchor: .center)
                     } else if command == .down {
-                        selected = min(visibleBrowsers.count + appsForUrls.count - 1, selected + 1)
+                        selected = min(totalItemCount - 1, selected + 1)
                         scrollViewProxy.scrollTo(selected, anchor: .center)
                     }
                 }
                 .background {
                     Button(action: {
-                        if appsAtTop {
-                            if selected < appsForUrls.count {
-                                openUrlsInApp(app: appsForUrls[selected])
-                            } else {
-                                BrowserUtil.openURL(
-                                    urls,
-                                    app: visibleBrowsers[selected - appsForUrls.count],
-                                    isIncognito: false
-                                )
-                            }
-                        } else {
-                            if selected < visibleBrowsers.count {
-                                BrowserUtil.openURL(
-                                    urls,
-                                    app: visibleBrowsers[selected],
-                                    isIncognito: false
-                                )
-                            } else {
-                                openUrlsInApp(app: appsForUrls[selected - visibleBrowsers.count])
-                            }
-                        }
+                        handleEnter(isIncognito: false)
                     }) {}
                     .opacity(0)
                     .keyboardShortcut(.defaultAction)
 
                     Button(action: {
-                        if appsAtTop {
-                            if selected < appsForUrls.count {
-                                openUrlsInApp(app: appsForUrls[selected])
-                            } else {
-                                BrowserUtil.openURL(
-                                    urls,
-                                    app: visibleBrowsers[selected - appsForUrls.count],
-                                    isIncognito: true
-                                )
-                            }
-                        } else {
-                            if selected < visibleBrowsers.count {
-                                BrowserUtil.openURL(
-                                    urls,
-                                    app: visibleBrowsers[selected],
-                                    isIncognito: true
-                                )
-                            } else {
-                                openUrlsInApp(app: appsForUrls[selected - visibleBrowsers.count])
-                            }
-                        }
+                        handleEnter(isIncognito: true)
                     }) {}
                     .opacity(0)
                     .keyboardShortcut(.return, modifiers: [.shift])

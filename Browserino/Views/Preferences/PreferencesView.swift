@@ -31,19 +31,19 @@ struct PreferencesView: View {
                     Label("Browsers", systemImage: "gear")
                 }
                 .tag(1)
-            
+
             AppsTab()
                 .tabItem {
                     Label("Apps", systemImage: "gear")
                 }
                 .tag(2)
-            
+
             RulesTab()
                 .tabItem {
                     Label("Rules", systemImage: "gear")
                 }
                 .tag(3)
-            
+
             BrowserSearchLocationsTab()
                 .tabItem {
                     Label("Locations", systemImage: "gear")
