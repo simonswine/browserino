@@ -108,5 +108,5 @@ jobs:
             "artifacts/x86_64/Browserino-$TAG-macos-x86_64.dmg" \
             "artifacts/x86_64/Browserino-$TAG-macos-x86_64.dmg.sha256" \
             --title "$TAG" \
-            --notes-start "This is a fork of [Browserino](https://github.com/AlexStrNik/Browserino) by [Aleksandr Strizhnev (@AlexStrNik)](https://github.com/AlexStrNik)." \
+            --notes "This is a fork of [Browserino](https://github.com/AlexStrNik/Browserino) by [Aleksandr Strizhnev (@AlexStrNik)](https://github.com/AlexStrNik)." \
             --generate-notes
