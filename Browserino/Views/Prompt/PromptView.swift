@@ -42,7 +42,7 @@ struct PromptView: View {
     }
 
     var pickerBrowserItems: [PickerBrowserItem] {
-        let pickerBrowsers = visibleBrowsers.compactMap { browser in
+        let pickerBrowsers: [PickerBrowser] = visibleBrowsers.compactMap { browser -> PickerBrowser? in
             guard let bundle = Bundle(url: browser),
                   let bundleIdentifier = bundle.bundleIdentifier
             else {
