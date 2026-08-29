@@ -4,6 +4,8 @@
 
 Browserino is a tiny browser selector for MacOS written in SwiftUI. Just set as default browser, assign shortcuts, and now you can choose in which application you want to open the link.
 
+This repository is a fork of [Browserino](https://github.com/AlexStrNik/Browserino) by [Aleksandr Strizhnev (@AlexStrNik)](https://github.com/AlexStrNik). It includes independent changes while retaining credit to the upstream project and its contributors.
+
 Inspired by great [Browserosaurus](https://github.com/will-stone/browserosaurus), but a little bit faster and smaller thanks to native code, and fixes annoying Electron bug.
 
 # Installation

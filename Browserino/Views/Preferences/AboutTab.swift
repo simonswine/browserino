@@ -25,12 +25,9 @@ struct AboutTab: View {
             Spacer()
                 .frame(height: 16)
             
-            Button(action: {
-                NSWorkspace.shared.open(
-                    URL(string: "https://github.com/AlexStrNik/Browserino/")!
-                )
-            }) {
-                Text("https://github.com/AlexStrNik/Browserino/")
+            VStack(spacing: 8) {
+                Link("This fork: github.com/simonswine/browserino", destination: URL(string: "https://github.com/simonswine/browserino")!)
+                Link("Upstream: Browserino by Aleksandr Strizhnev (@AlexStrNik)", destination: URL(string: "https://github.com/AlexStrNik/Browserino/")!)
             }
             .buttonStyle(.link)
             
