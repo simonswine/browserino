@@ -15,6 +15,7 @@ struct PromptView: View {
     @AppStorage("shortcuts") private var shortcuts: [String: String] = [:]
     @AppStorage("chromeProfiles") private var chromeProfiles: [ChromeProfile] = []
     @AppStorage("chromeProfilesEnabled") private var chromeProfilesEnabled: Bool = true
+    @AppStorage("browserOrder") private var browserOrder: [String] = []
 
     @AppStorage("copy_closeAfterCopy") private var closeAfterCopy: Bool = false
     @AppStorage("copy_alternativeShortcut") private var alternativeShortcut: Bool = false
@@ -38,7 +39,17 @@ struct PromptView: View {
     }
 
     var visibleBrowsers: [URL] {
-        browsers.filter { !hiddenBrowsers.contains($0) }
+        browsers.filter { browser in
+            guard hiddenBrowsers.contains(browser),
+                  let bundle = Bundle(url: browser)
+            else {
+                return true
+            }
+
+            return chromeProfilesEnabled
+                && bundle.bundleIdentifier == ChromeProfileUtil.chromeBundleID
+                && !chromeProfiles.isEmpty
+        }
     }
 
     var pickerBrowserItems: [PickerBrowserItem] {
@@ -60,7 +71,8 @@ struct PromptView: View {
             browsers: pickerBrowsers,
             chromeProfilesEnabled: chromeProfilesEnabled,
             chromeProfiles: chromeProfiles,
-            shortcuts: shortcuts
+            shortcuts: shortcuts,
+            browserOrder: browserOrder
         )
     }
 
