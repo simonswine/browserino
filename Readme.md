@@ -13,6 +13,17 @@ brew tap AlexStrNik/Browserino
 brew install browserino --no-quarantine
 ```
 
-Or download Browserino from the [releases page](https://github.com/AlexStrNik/Browserino/releases).
+Or download Browserino from the [releases page](https://github.com/simonswine/browserino/releases). Choose the `arm64` DMG for Apple Silicon Macs or the `x86_64` DMG for Intel Macs.
+
+# Releases
+
+Pushing a version tag automatically builds and publishes unsigned DMGs for Apple Silicon and Intel Macs:
+
+```bash
+git tag v1.2.3
+git push origin v1.2.3
+```
+
+The tag version must use `vMAJOR.MINOR.PATCH` format.
 
 If you want to support the app, you can buy it on [Gumroad](https://alexstrnik.gumroad.com/l/browserino).
